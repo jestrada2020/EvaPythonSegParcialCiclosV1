@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación Interactiva de Python</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        h2 {
+            color: #2980b9;
+            margin-top: 30px;
+        }
+        
+        .student-info {
+            background-color: #eaf2f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .student-info input {
+            border: 1px solid #bdc3c7;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .instructions {
+            background-color: #fffde7;
+            padding: 15px;
+            border-left: 4px solid #fbc02d;
+            margin-bottom: 20px;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .question {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .question-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 18px;
+        }
+        
+        .points {
+            background-color: #3498db;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+        
+        .question-description {
+            margin-bottom: 15px;
+            color: #555;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        
+        .code-container {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 15px;
+            position: relative;
+            margin-bottom: 15px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+        
+        .code-placeholder {
+            background-color: #fff3cd;
+            border: 1px dashed #ffc107;
+            border-radius: 3px;
+            padding: 0 5px;
+            color: #333;
+            font-weight: normal;
+        }
+        
+        .code-placeholder.correct {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .code-placeholder.incorrect {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        .code-comment {
+            color: #3498db;
+            font-style: italic;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .results {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            border-radius: 0 5px 5px 0;
+            display: none;
+        }
+        
+        .score-display {
+            font-size: 24px;
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+            padding: 15px;
+            background-color: #4caf50;
+            color: white;
+            border-radius: 5px;
+        }
+        
+        .question-result {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .correct {
+            color: #155724;
+            font-weight: bold;
+        }
+        
+        .incorrect {
+            color: #721c24;
+        }
+        
+        .feedback-btn {
+            background-color: #6c757d;
+            padding: 8px 15px;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .feedback-btn:hover {
+            background-color: #5a6268;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .progress-container {
+            width: 100%;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background-color: #4caf50;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.5s;
+        }
+    </style>
+</head>
+<body>
+    <h1>Evaluación Interactiva de Python</h1>
+    <h2 style="text-align: center;">Sintaxis, Tipos, Condicionales y Bucles</h2>
+    
+    <div class="student-info">
+        <div>
+            <label for="nombre"><strong>Nombre Completo:</strong></label>
+            <input type="text" id="nombre" placeholder="Ingrese su nombre completo">
+        </div>
+        <div>
+            <label for="apellidos"><strong>Apellidos Completos:</strong></label>
+            <input type="text" id="apellidos" placeholder="Ingrese sus apellidos">
+        </div>
+    </div>
+    
+    <div class="instructions">
+        <h3>Instrucciones Generales</h3>
+        <ul>
+            <li>Completa los <strong>espacios en blanco</strong> en cada fragmento de código Python.</li>
+            <li>Los espacios están marcados con <span class="code-placeholder">[...]</span>.</li>
+            <li>Los comentarios <span class="code-comment"># Rellena:</span> te dan pistas sobre qué escribir.</li>
+            <li>Haz clic en <strong>"Verificar Respuesta"</strong> en cada pregunta para obtener retroalimentación.</li>
+            <li>Cuando completes todas las preguntas, haz clic en <strong>"Calcular Nota Final"</strong>.</li>
+            <li>Presta atención a la <strong>sintaxis exacta</strong> (mayúsculas, minúsculas, símbolos).</li>
+        </ul>
+    </div>
+    
+    <div class="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    
+    <h2>Sección de Preguntas sobre Funciones (Total: 50 Puntos)</h2>
+    
+    <div id="questions-container">
+        <!-- Pregunta 1 -->
+        <div class="question" id="q1">
+            <div class="question-title">1. Función: Verificar Mayoría de Edad (Condicional Simple) <span class="points">3 Puntos</span></div>
+            <div class="question-description">Define una función llamada <code>es_mayor_edad</code> que acepte un parámetro <code>edad</code> (entero). La función debe devolver <code>True</code> si <code>edad</code> es mayor o igual a 18, y <code>False</code> en caso contrario. Usa una estructura condicional <code>if-else</code>.</div>
+            <div class="code-container">
+                <pre><span class="code-placeholder" id="q1-part1" contenteditable="true">[...]</span> es_mayor_edad(edad): <span class="code-comment"># Rellena: Palabra clave para definir una función</span>
+    """Verifica si una edad corresponde a la mayoría de edad (>= 18)."""
+    if edad <span class="code-placeholder" id="q1-part2" contenteditable="true">[...]</span> 18: <span class="code-comment"># Rellena: Operador de comparación</span>
+        return <span class="code-placeholder" id="q1-part3" contenteditable="true">[...]</span> <span class="code-comment"># Rellena: Valor booleano</span>
+    else:
+        return <span class="code-placeholder" id="q1-part4" contenteditable="true">[...]</span> <span class="code-comment"># Rellena: Valor booleano</span></pre>
+            </div>
+            <button class="feedback-btn" onclick="checkAnswer(1)">Verificar Respuesta</button>
+            <div id="q1-feedback" class="hidden"></div>
+        </div>
+        
+        <!-- Pregunta 2 -->
+        <div class="question" id="q2">
+            <div class="question-title">2. Función: Clasificar Número (Condicional Anidado) <span class="points">3 Puntos</span></div>
+            <div class="question-description">Completa la función <code>clasificar_numero</code> que recibe un parámetro <code>numero</code>. Debe devolver un string indicando si el número es <code>"positivo"</code>, <code>"negativo"</code> o <code>"cero"</code>. Usa la estructura <code>if-elif-else</code>.</div>
+            <div class="code-container">
+                <pre>def clasificar_numero(numero):
+    """Clasifica un número como positivo, negativo o cero."""
+    if numero > 0:
+        return <span class="code-placeholder" id="q2-part1" contenteditable="true">[...]</span> <span class="code-comment"># Rellena: String "positivo"</span>
+    <span class="code-placeholder" id="q2-part2" contenteditable="true">[...]</span> numero < 0: <span class="code-comment"># Rellena: Palabra clave para siguiente condición</span>
+        return "negativo"
+    else:
+        return <span class="code-placeholder" id="q2-part3" contenteditable="true">[...]</span> <span class="code-comment"># Rellena: String "cero"</span></pre>
+            </div>
+            <button class="feedback-btn" onclick="checkAnswer(2)">Verificar Respuesta</button>
+            <div id="q2-feedback" class="hidden"></div>
+        </div>
+        
+        <!-- Pregunta 3 -->
+        <div class="question" id="q3">
+            <div class="question-title">3. Función: Calcular Suma de Lista (Ciclo For) <span class="points">3 Puntos</span></div>
+            <div class="question-description">Completa la función <code>sumar_lista</code> que recibe una lista de números. La función debe calcular y devolver la suma total de todos los elementos. Usa un ciclo <code>for</code> para recorrer la lista.</div>
+            <div class="code-container">
+                <pre>def sumar_lista(lista_numeros):
+    """Calcula la suma de los elementos de una lista de números."""
+    suma_total = <span class="code-placeholder" id="q3-part1" contenteditable="true">[...]</span> <span class="code-comment"># Rellena: Valor inicial del acumulador</span>
+    <span class="code-placeholder" id="q3-part2" contenteditable="true">[...]</span> numero <span class="code-placeholder" id="q3-part3" contenteditable="true">[...]</span> lista_numeros: <span class="code-comment"># Rellena: Sintaxis del bucle for</span>
+        suma_total <span class="code-placeholder" id="q3-part4" contenteditable="true">[...]</span> numero <span class="code-comment"># Rellena: Operador para añadir a la suma</span>
+    return suma_total</pre>
+            </div>
+            <button class="feedback-btn" onclick="checkAnswer(3)">Verificar Respuesta</button>
+            <div id="q3-feedback" class="hidden"></div>
+        </div>
+        
+        <!-- Pregunta 4 -->
+        <div class="question" id="q4">
+            <div class="question-title">4. Función: Contar Hasta N (Ciclo While) <span class="points">3 Puntos</span></div>
+            <div class="question-description">Completa la función <code>contar_hasta_n</code> que recibe un entero positivo <code>n</code>. Usa un ciclo <code>while</code> para imprimir los números desde 1 hasta <code>n</code> (inclusive). Si <code>n</code> es menor que 1, imprime un mensaje y no hagas nada más.</div>
+            <div class="code-container">
+                <pre>def contar_hasta_n(n):
+    """Imprime números de 1 hasta n usando un ciclo while."""
+    if n < 1:
+        print("Por favor, ingresa un número positivo.")
+        return
+    
+    contador = 1 # Inicialización del contador
+    while contador <span class="code-placeholder" id="q4-part1" contenteditable="true">[...]</span> n: <span class="code-comment"># Rellena: Condición del while</span>
+        print(contador)
+        contador <span class="code-placeholder" id="q4-part2" contenteditable="true">[...]</span> <span class="code-comment"># Rellena: Operador para incrementar</span></pre>
+            </div>
+            <button class="feedback-btn" onclick="checkAnswer(4)">Verificar Respuesta</button>
+            <div id="q4-feedback" class="hidden"></div>
+        </div>
+        
+        <!-- Pregunta 5 -->
+        <div class="question" id="q5">
+            <div class="question-title">5. Función: Filtrar Pares (Ciclo For y Condicional) <span class="points">4 Puntos</span></div>
+            <div class="question-description">Completa la función <code>filtrar_numeros_pares</code> que recibe una lista de enteros. Devuelve una nueva lista que contenga únicamente los números pares. Usa un ciclo <code>for</code> para iterar y un condicional <code>if</code> para verificar si un número es par.</div>
+            <div class="code-container">
+                <pre>def filtrar_numeros_pares(numeros):
+    """Devuelve una lista con solo los números pares de la lista original."""
+    pares = <span class="code-placeholder" id="q5-part1" contenteditable="true">[...]</span> <span class="code-comment"># Rellena: Inicializar una lista vacía</span>
+    for num in numeros:
+        # Comprobar si el número es par
+        if num <span class="code-placeholder" id="q5-part2" contenteditable="true">[...]</span> 2 == 0: <span class="code-comment"># Rellena: Operador módulo</span>
+            pares.<span class="code-placeholder" id="q5-part3" contenteditable="true">[...]</span>(num) <span class="code-comment"># Rellena: Método para añadir elemento</span>
+    return pares</pre>
+            </div>
+            <button class="feedback-btn" onclick="checkAnswer(5)">Verificar Respuesta</button>
+            <div id="q5-feedback" class="hidden"></div>
+        </div>
+        
+        <!-- Pregunta 6 -->
+        <div class="question" id="q6">
+            <div class="question-title">6. Función: Categoría de Edad (Condicional Anidado) <span class="points">4 Puntos</span></div>
+            <div class="question-description">Completa la función <code>categorizar_edad</code> que recibe un parámetro <code>edad</code>. Devuelve un string con la categoría correspondiente: <code>"infante"</code> (0-2), <code>"niño"</code> (3-12), <code>"adolescente"</code> (13-17), <code>"adulto"</code> (18-64), o <code>"adulto mayor"</code> (65+). Si la edad es negativa, devuelve <code>"Edad inválida"</code>.</div>
+            <div class="code-container">
+                <pre>def categorizar_edad(edad):
+    """Categoriza una edad en grupos usando if-elif-else."""
+    if edad >= 0 and edad <= 2:
+        return "infante"
+    <span class="code-placeholder" id="q6-part1" contenteditable="true">[...]</span> edad >= 3 and edad <= 12: <span class="code-comment"># Rellena: Palabra clave</span>
+        return "niño"
+    elif edad >= 13 and edad <= 17:
+        return <span class="code-placeholder" id="q6-part2" contenteditable="true">[...]</span> <span class="code-comment"># Rellena: String</span>
+    elif edad >= 18 and edad <= 64:
+        return "adulto"
+    <span class="code-placeholder" id="q6-part3" contenteditable="true">[...]</span> edad >= 65: <span class="code-comment"># Rellena: Palabra clave y condición</span>
+        return "adulto mayor"
+    else: # Se ejecuta si edad < 0
+        return "Edad inválida"</pre>
+            </div>
+            <button class="feedback-btn" onclick="checkAnswer(6)">Verificar Respuesta</button>
+            <div id="q6-feedback" class="hidden"></div>
+        </div>
+        
+        <!-- Pregunta 7 -->
+        <div class="question" id="q7">
+            <div class="question-title">7. Función: Encontrar Primer Múltiplo (Ciclo While) <span class="points">4 Puntos</span></div>
+            <div class="question-description">Completa la función <code>encontrar_primer_multiplo</code> que recibe una lista de enteros y un entero <code>d</code> (divisor). Devuelve el primer número en la lista que sea múltiplo de <code>d</code>. Si no hay ninguno, devuelve <code>None</code>. Usa un ciclo <code>while</code>.</div>
+            <div class="code-container">
+                <pre>def encontrar_primer_multiplo(numeros, d):
+    """Encuentra el primer múltiplo de d en la lista usando while."""
+    indice = 0 # Índice para recorrer la lista
+    while indice < len(<span class="code-placeholder" id="q7-part1" contenteditable="true">[...]</span>): <span class="code-comment"># Rellena: Lista a medir</span>
+        numero_actual = numeros[indice]
+        # Comprobar si el número actual es múltiplo de d
+        if numero_actual % d == 0:
+            return <span class="code-placeholder" id="q7-part2" contenteditable="true">[...]</span> <span class="code-comment"># Rellena: Devolver el número</span>
+        
+        indice <span class="code-placeholder" id="q7-part3" contenteditable="true">[...]</span> <span class="code-comment"># Rellena: Incrementar el índice</span>
+    
+    # Si el bucle termina sin encontrar múltiplo
+    return <span class="code-placeholder" id="q7-part4" contenteditable="true">[...]</span> <span class="code-comment"># Rellena: Valor a devolver</span></pre>
+            </div>
+            <button class="feedback-btn" onclick="checkAnswer(7)">Verificar Respuesta</button>
+            <div id="q7-feedback" class="hidden"></div>
+        </div>
+        
+        <!-- Pregunta 8 -->
+        <div class="question" id="q8">
+            <div class="question-title">8. Función: Generar Tabla de Multiplicar (Ciclo For) <span class="points">3 Puntos</span></div>
+            <div class="question-description">Completa la función <code>tabla_multiplicar</code> que recibe un entero <code>numero</code>. Imprime en consola su tabla de multiplicar del 1 al 10. Usa un ciclo <code>for</code> con <code>range()</code> y f-strings para formatear la salida.</div>
+            <div class="code-container">
+                <pre>def tabla_multiplicar(numero):
+    """Imprime la tabla de multiplicar del 'numero' del 1 al 10."""
+    print(f"Tabla de multiplicar del {numero}:")
+    # Usar range() para generar números del 1 al 10
+    for i in range(1, <span class="code-placeholder" id="q8-part1" contenteditable="true">[...]</span>): <span class="code-comment"># Rellena: Límite superior</span>
+        resultado = numero * i
+        # Usar f-string para formatear la salida
+        print(f"{numero} x {i} = {<span class="code-placeholder" id="q8-part2" contenteditable="true">[...]</span>}" ) <span class="code-comment"># Rellena: Variable con resultado</span></pre>
+            </div>
+            <button class="feedback-btn" onclick="checkAnswer(8)">Verificar Respuesta</button>
+            <div id="q8-feedback" class="hidden"></div>
+        </div>
+        
+        <!-- Pregunta 9 -->
+        <div class="question" id="q9">
+            <div class="question-title">9. Función: Procesar Lista Mixta (For, If, Tipos) <span class="points">4 Puntos</span></div>
+            <div class="question-description">Completa la función <code>procesar_lista_mixta</code> que recibe una lista con diferentes tipos de datos. Devuelve una nueva lista donde: números se multiplican por 2, strings se convierten a mayúsculas, y otros tipos se ignoran. Usa <code>isinstance()</code> para verificar tipos.</div>
+            <div class="code-container">
+                <pre>def procesar_lista_mixta(datos):
+    """Procesa lista: duplica números, mayúsculas en strings, ignora otros."""
+    resultado_procesado = [] # Lista para guardar resultados
+    for item in datos:
+        # Verificar si el item es un número (int o float)
+        if isinstance(item, (int, float)):
+            resultado_procesado.append(item <span class="code-placeholder" id="q9-part1" contenteditable="true">[...]</span>) <span class="code-comment"># Rellena: Multiplicar por 2</span>
+        # Verificar si el item es un string
+        elif isinstance(item, <span class="code-placeholder" id="q9-part2" contenteditable="true">[...]</span>): <span class="code-comment"># Rellena: Tipo de dato</span>
+            resultado_procesado.append(item.<span class="code-placeholder" id="q9-part3" contenteditable="true">[...]</span>()) <span class="code-comment"># Rellena: Método para mayúsculas</span>
+        # Nota: No hay 'else', simplemente ignoramos otros tipos
+    
+    return resultado_procesado</pre>
+            </div>
+            <button class="feedback-btn" onclick="checkAnswer(9)">Verificar Respuesta</button>
+            <div id="q9-feedback" class="hidden"></div>
+        </div>
+        
+        <!-- Pregunta 10 -->
+        <div class="question" id="q10">
+            <div class="question-title">10. Función: Validar Contraseña (Condicionales, Longitud, Ciclo For) <span class="points">4 Puntos</span></div>
+            <div class="question-description">Completa la función <code>validar_contraseña</code> que recibe un string <code>password</code>. Devuelve <code>True</code> si: 1) Tiene 8+ caracteres, y 2) Contiene al menos un dígito. Si no cumple alguna condición, devuelve <code>False</code>. Usa un ciclo para buscar dígitos.</div>
+            <div class="code-container">
+                <pre>def validar_contraseña(password):
+    """Valida si password: >= 8 chars y contiene al menos un dígito."""
+    # Primera condición: verificar longitud
+    if len(password) < 8:
+        return False # Si es muy corta, ya no cumple
+    
+    # Segunda condición: buscar al menos un dígito
+    tiene_numero = <span class="code-placeholder" id="q10-part1" contenteditable="true">[...]</span> <span class="code-comment"># Rellena: Inicializar flag booleano</span>
+    for caracter in password:
+        # Usar método de string para verificar si es un dígito
+        if caracter.isdigit():
+            tiene_numero = True
+            <span class="code-placeholder" id="q10-part2" contenteditable="true">[...]</span> <span class="code-comment"># Rellena: Salir del bucle</span>
+    
+    # La función devuelve True solo si ambas condiciones se cumplen
+    return <span class="code-placeholder" id="q10-part3" contenteditable="true">[...]</span> <span class="code-comment"># Rellena: Valor del flag</span></pre>
+            </div>
+            <button class="feedback-btn" onclick="checkAnswer(10)">Verificar Respuesta</button>
+            <div id="q10-feedback" class="hidden"></div>
+        </div>
+        
+        <!-- Pregunta 11 -->
+        <div class="question" id="q11">
+            <div class="question-title">11. Función: Encontrar Todos los Índices (For, Enumerate) <span class="points">3 Puntos</span></div>
+            <div class="question-description">Completa la función <code>encontrar_indices</code> que recibe una lista y un valor. Devuelve una nueva lista con todos los índices donde aparece el valor. Si no se encuentra, devuelve lista vacía. Usa <code>enumerate</code> dentro de un ciclo <code>for</code>.</div>
+            <div class="code-container">
+                <pre>def encontrar_indices(datos, valor_buscado):
+    """Encuentra todos los índices de un valor en una lista."""
+    indices_encontrados = [] # Inicializa la lista de resultados
+    for indice, elemento in enumerate(<span class="code-placeholder" id="q11-part1" contenteditable="true">[...]</span>): <span class="code-comment"># Rellena: Lista a iterar</span>
+        if elemento == valor_buscado:
+            indices_encontrados.<span class="code-placeholder" id="q11-part2" contenteditable="true">[...]</span>(indice) <span class="code-comment"># Rellena: Método para añadir</span>
+    return indices_encontrados</pre>
+            </div>
+            <button class="feedback-btn" onclick="checkAnswer(11)">Verificar Respuesta</button>
+            <div id="q11-feedback" class="hidden"></div>
+        </div>
+        
+        <!-- Pregunta 12 -->
+        <div class="question" id="q12">
+            <div class="question-title">12. Función: Simulador de Login (While, If/Else, Break) <span class="points">3 Puntos</span></div>
+            <div class="question-description">Completa la función <code>simular_login</code> que simula 3 intentos de login. Recibe la <code>contraseña_correcta</code>. Pide al usuario que ingrese una contraseña. Si coincide, imprime "Acceso concedido" y termina. Si no, imprime "Contraseña incorrecta" y permite otro intento. Si falla 3 veces, imprime "Acceso bloqueado". Usa un ciclo <code>while</code>.</div>
+            <div class="code-container">
+                <pre>def simular_login(contraseña_correcta):
+    """Simula hasta 3 intentos de login."""
+    intentos_restantes = 3
+    while intentos_restantes > <span class="code-placeholder" id="q12-part1" contenteditable="true">[...]</span>: <span class="code-comment"># Rellena: Condición para continuar</span>
+        intento_actual = input(f"Ingrese contraseña ({intentos_restantes} intentos restantes): ")
+        if intento_actual == contraseña_correcta:
+            print("Acceso concedido")
+            <span class="code-placeholder" id="q12-part2" contenteditable="true">[...]</span> <span class="code-comment"># Rellena: Salir del bucle</span>
+        else:
+            print("Contraseña incorrecta.")
+            intentos_restantes -= 1 # Decrementar intentos
+    
+    # Si el bucle termina sin 'break' (se agotaron intentos)
+    if intentos_restantes == 0:
+        print(<span class="code-placeholder" id="q12-part3" contenteditable="true">[...]</span>) <span class="code-comment"># Rellena: Mensaje final</span></pre>
+            </div>
+            <button class="feedback-btn" onclick="checkAnswer(12)">Verificar Respuesta</button>
+            <div id="q12-feedback" class="hidden"></div>
+        </div>
+        
+        <!-- Pregunta 13 -->
+        <div class="question" id="q13">
+            <div class="question-title">13. Función: Crear Matriz (Bucles For Anidados) <span class="points">3 Puntos</span></div>
+            <div class="question-description">Completa la función <code>crear_matriz</code> que recibe filas, columnas y un valor inicial. Crea y devuelve una matriz (lista de listas) con las dimensiones especificadas, donde cada celda contiene el valor inicial. Usa bucles <code>for</code> anidados.</div>
+            <div class="code-container">
+                <pre>def crear_matriz(filas, columnas, valor_inicial):
+    """Crea una matriz (lista de listas) con dimensiones dadas."""
+    matriz = []
+    for i in range(<span class="code-placeholder" id="q13-part1" contenteditable="true">[...]</span>): <span class="code-comment"># Rellena: Iterar sobre filas</span>
+        fila_actual = [] # Crear una nueva lista para la fila actual
+        for j in range(columnas):
+            fila_actual.<span class="code-placeholder" id="q13-part2" contenteditable="true">[...]</span>(valor_inicial) <span class="code-comment"># Rellena: Añadir valor</span>
+        matriz.append(<span class="code-placeholder" id="q13-part3" contenteditable="true">[...]</span>) <span class="code-comment"># Rellena: Añadir fila a matriz</span>
+    return matriz</pre>
+            </div>
+            <button class="feedback-btn" onclick="checkAnswer(13)">Verificar Respuesta</button>
+            <div id="q13-feedback" class="hidden"></div>
+        </div>
+        
+        <!-- Pregunta 14 -->
+        <div class="question" id="q14">
+            <div class="question-title">14. Función: Verificar Palíndromo (Strings, Ciclo) <span class="points">4 Puntos</span></div>
+            <div class="question-description">Completa la función <code>es_palindromo</code> que recibe un string <code>texto</code>. Devuelve <code>True</code> si es un palíndromo (se lee igual al revés), ignorando mayúsculas/minúsculas y caracteres no alfanuméricos. Primero "limpia" el string y luego comparalo con su reverso.</div>
+            <div class="code-container">
+                <pre>def es_palindromo(texto):
+    """Verifica si un texto es palíndromo (ignorando espacios/puntuación/mayúsculas)."""
+    # 1. Limpiar el texto: convertir a minúsculas y quedarse solo con letras/números
+    texto_limpio = ""
+    for caracter in texto:
+        if caracter.isalnum(): # isalnum() verifica si es letra o número
+            texto_limpio += caracter.<span class="code-placeholder" id="q14-part1" contenteditable="true">[...]</span>() <span class="code-comment"># Rellena: Método para minúsculas</span>
+    
+    # 2. Verificar si el texto limpio es igual a su reverso
+    reverso = texto_limpio[::-1] # Slicing para obtener el reverso
+    
+    if texto_limpio == <span class="code-placeholder" id="q14-part2" contenteditable="true">[...]</span>: <span class="code-comment"># Rellena: Comparar con reverso</span>
+        return True
+    else:
+        return False</pre>
+            </div>
+            <button class="feedback-btn" onclick="checkAnswer(14)">Verificar Respuesta</button>
+            <div id="q14-feedback" class="hidden"></div>
+        </div>
+        
+        <!-- Pregunta 15 -->
+        <div class="question" id="q15">
+            <div class="question-title">15. Función: Contar Positivos y Negativos (For, If/Elif, Tupla) <span class="points">3 Puntos</span></div>
+            <div class="question-description">Completa la función <code>contar_positivos_negativos</code> que recibe una lista de números. Cuenta cuántos son positivos (>0) y cuántos negativos (<0) (los ceros se ignoran). Devuelve una tupla con los resultados: <code>(cantidad_positivos, cantidad_negativos)</code>.</div>
+            <div class="code-container">
+                <pre>def contar_positivos_negativos(numeros):
+    """Cuenta números positivos (>0) y negativos (<0) en una lista."""
+    positivos = 0
+    negativos = 0
+    for num in numeros:
+        if num > 0:
+            positivos <span class="code-placeholder" id="q15-part1" contenteditable="true">[...]</span> <span class="code-comment"># Rellena: Incrementar contador</span>
+        elif num < <span class="code-placeholder" id="q15-part2" contenteditable="true">[...]</span>: <span class="code-comment"># Rellena: Condición para negativo</span>
+            negativos += 1
+        # El cero se ignora, no necesita 'else'
+    
+    return (<span class="code-placeholder" id="q15-part3" contenteditable="true">[...]</span>, <span class="code-placeholder" id="q15-part4" contenteditable="true">[...]</span>) <span class="code-comment"># Rellena: Devolver tupla</span></pre>
+            </div>
+            <button class="feedback-btn" onclick="checkAnswer(15)">Verificar Respuesta</button>
+            <div id="q15-feedback" class="hidden"></div>
+        </div>
+    </div>
+    
+    <button id="calculate-btn" onclick="calculateFinalGrade()">Calcular Nota Final</button>
+    
+    <div class="results" id="results">
+        <h2>Resultados de la Evaluación</h2>
+        <div id="results-details"></div>
+        <div class="score-display" id="score-display"></div>
+    </div>
+    
+    <script>
+        // Respuestas correctas para cada pregunta
+        const correctAnswers = {
+            q1: ["def", ">=", "True", "False"],
+            q2: ["\"positivo\"", "elif", "\"cero\""],
+            q3: ["0", "for", "in", "+="],
+            q4: ["<=", "+="],
+            q5: ["[]", "%", "append"],
+            q6: ["elif", "\"adolescente\"", "elif"],
+            q7: ["numeros", "numero_actual", "+=", "None"],
+            q8: ["11", "resultado"],
+            q9: ["* 2", "str", "upper"],
+            q10: ["False", "break", "tiene_numero"],
+            q11: ["datos", "append"],
+            q12: ["0", "break", "\"Acceso bloqueado\""],
+            q13: ["filas", "append", "fila_actual"],
+            q14: ["lower", "reverso"],
+            q15: ["+= 1", "0", "positivos", "negativos"]
+        };
+        
+        // Valores de puntos para cada pregunta
+        const pointValues = {
+            q1: 3, q2: 3, q3: 3, q4: 3, q5: 4,
+            q6: 4, q7: 4, q8: 3, q9: 4, q10: 4,
+            q11: 3, q12: 3, q13: 3, q14: 4, q15: 3
+        };
+        
+        // Objeto para almacenar los resultados
+        const results = {};
+        
+        // Función para verificar una respuesta individual
+        function checkAnswer(questionNumber) {
+            const questionId = `q${questionNumber}`;
+            const feedbackDiv = document.getElementById(`${questionId}-feedback`);
+            feedbackDiv.innerHTML = "";
+            feedbackDiv.classList.remove("hidden");
+            
+            let allCorrect = true;
+            let correctCount = 0;
+            const totalParts = correctAnswers[questionId].length;
+            
+            for (let i = 1; i <= totalParts; i++) {
+                const partId = `${questionId}-part${i}`;
+                const placeholder = document.getElementById(partId);
+                const userAnswer = placeholder.textContent.trim();
+                const correctAnswer = correctAnswers[questionId][i-1];
+                
+                // Limpiar clases previas
+                placeholder.classList.remove("correct", "incorrect");
+                
+                // Verificar respuesta (ignorando mayúsculas/minúsculas y comillas)
+                const normalizedUserAnswer = userAnswer.toLowerCase().replace(/['"]/g, '');
+                const normalizedCorrectAnswer = correctAnswer.toLowerCase().replace(/['"]/g, '');
+                
+                if (normalizedUserAnswer === normalizedCorrectAnswer) {
+                    placeholder.classList.add("correct");
+                    correctCount++;
+                } else {
+                    placeholder.classList.add("incorrect");
+                    allCorrect = false;
+                }
+            }
+            
+            // Calcular puntaje para esta pregunta
+            const questionScore = (correctCount / totalParts) * pointValues[questionId];
+            results[questionId] = questionScore;
+            
+            // Mostrar retroalimentación
+            if (allCorrect) {
+                feedbackDiv.innerHTML = `<span class="correct">¡Correcto! (${pointValues[questionId]} puntos)</span>`;
+            } else {
+                feedbackDiv.innerHTML = `<span class="incorrect">Parcialmente correcto (${correctCount}/${totalParts} partes, ${questionScore.toFixed(1)}/${pointValues[questionId]} puntos)</span>`;
+            }
+            
+            updateProgressBar();
+        }
+        
+        // Función para calcular la nota final
+        function calculateFinalGrade() {
+            let totalScore = 0;
+            let resultsHTML = "";
+            let totalCorrect = 0;
+            let totalPossible = 0;
+            
+            // Verificar que todas las preguntas tengan al menos una respuesta
+            for (let i = 1; i <= 15; i++) {
+                const questionId = `q${i}`;
+                if (typeof results[questionId] === 'undefined') {
+                    checkAnswer(i); // Verificar la pregunta si no se ha hecho
+                }
+            }
+            
+            // Calcular puntaje total y detalles
+            for (let i = 1; i <= 15; i++) {
+                const questionId = `q${i}`;
+                const questionScore = results[questionId] || 0;
+                totalScore += questionScore;
+                totalPossible += pointValues[questionId];
+                
+                resultsHTML += `<div class="question-result"><strong>Pregunta ${i}:</strong> `;
+                resultsHTML += `${questionScore.toFixed(1)}/${pointValues[questionId]} puntos</div>`;
+            }
+            
+            // Mostrar resultados
+            document.getElementById('results-details').innerHTML = resultsHTML;
+            
+            const percentage = (totalScore / totalPossible) * 100;
+            let gradeMessage = "";
+            
+            if (percentage >= 90) gradeMessage = "¡Excelente!";
+            else if (percentage >= 80) gradeMessage = "¡Muy bien!";
+            else if (percentage >= 70) gradeMessage = "Buen trabajo";
+            else if (percentage >= 60) gradeMessage = "Aprobado";
+            else gradeMessage = "Necesitas practicar más";
+            
+            document.getElementById('score-display').innerHTML = `
+                ${gradeMessage}<br>
+                Puntaje Total: ${totalScore.toFixed(1)} / 50 puntos<br>
+                Porcentaje: ${percentage.toFixed(1)}%
+            `;
+            
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Función para actualizar la barra de progreso
+        function updateProgressBar() {
+            let answeredCount = 0;
+            for (let i = 1; i <= 15; i++) {
+                const questionId = `q${i}`;
+                if (typeof results[questionId] !== 'undefined') {
+                    answeredCount++;
+                }
+            }
+            
+            const progressPercentage = (answeredCount / 15) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPercentage}%`;
+        }
+        
+        // Hacer que los placeholders sean editables
+        document.querySelectorAll('.code-placeholder').forEach(placeholder => {
+            placeholder.addEventListener('focus', function() {
+                if (this.textContent === "[...]") {
+                    this.textContent = "";
+                }
+            });
+            
+            placeholder.addEventListener('blur', function() {
+                if (this.textContent.trim() === "") {
+                    this.textContent = "[...]";
+                }
+            });
+        });
+    </script>
+</body>
+</html>
